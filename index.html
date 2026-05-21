@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>INTEL ARCHIVE</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    min-height: 100vh;
+    background: #080807;
+    font-family: 'Share Tech Mono', monospace;
+    color: #c8d8b8;
+    padding: 48px 40px;
+  }
+
+  /* scanlines */
+  body::before {
+    content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 999;
+    background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+  }
+
+  header {
+    display: flex; align-items: baseline; justify-content: space-between;
+    border-bottom: 1px solid #1e2e14;
+    padding-bottom: 20px; margin-bottom: 36px;
+  }
+  h1 {
+    font-family: 'Oswald', sans-serif; font-size: 28px; font-weight: 700;
+    letter-spacing: 0.2em; text-transform: uppercase; color: #c8d8b8;
+  }
+  h1 span { color: #4caf50; }
+  .header-meta {
+    font-size: 10px; letter-spacing: 0.25em; color: #3a4a2a;
+    text-transform: uppercase;
+  }
+
+  /* grid */
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 14px;
+  }
+
+  /* card */
+  a.card {
+    display: block; text-decoration: none;
+    background: #0e0e0b;
+    border: 1px solid #1e2e14;
+    padding: 20px;
+    transition: border-color 0.15s, transform 0.15s;
+    position: relative; overflow: hidden;
+  }
+  a.card:hover { border-color: #3a5a2a; transform: translateY(-2px); }
+  a.card:hover .arrow { opacity: 1; }
+
+  /* top colour stripe by classification */
+  a.card::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+  }
+  a.card.ts::before  { background: #8b1a1a; }
+  a.card.s::before   { background: #c8960c; }
+  a.card.c::before   { background: #1a4a8a; }
+  a.card.u::before   { background: #4caf50; }
+
+  .badge {
+    display: inline-block; font-size: 8px; font-weight: 700;
+    letter-spacing: 0.3em; padding: 2px 6px;
+    border: 1px solid; text-transform: uppercase; margin-bottom: 10px;
+  }
+  .ts .badge { color: #8b1a1a; border-color: #8b1a1a; background: rgba(139,26,26,0.12); }
+  .s  .badge { color: #c8960c; border-color: #c8960c; background: rgba(200,150,12,0.1); }
+  .c  .badge { color: #4a7aaa; border-color: #1a4a8a; background: rgba(26,74,138,0.1); }
+  .u  .badge { color: #4a6a3a; border-color: #2a3a1a; background: transparent; }
+
+  .card-id   { font-size: 9px; letter-spacing: 0.2em; color: #3a4a2a; margin-bottom: 6px; }
+  .card-title {
+    font-family: 'Oswald', sans-serif; font-size: 15px; font-weight: 600;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: #c8d8b8; line-height: 1.25; margin-bottom: 8px;
+  }
+  .card-desc { font-size: 9px; letter-spacing: 0.08em; color: #5a7a4a; line-height: 1.65; }
+
+  .card-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 14px; padding-top: 10px; border-top: 1px solid #1a1f12;
+  }
+  .card-date { font-size: 9px; letter-spacing: 0.15em; color: #2a3a1a; }
+  .arrow { font-size: 9px; color: #4caf50; letter-spacing: 0.1em; opacity: 0; transition: opacity 0.15s; }
+</style>
+</head>
+<body>
+
+<!-- ================================================================
+     ★  ADD DOCUMENTS HERE  ★
+     Copy any block inside DOCUMENTS = [ ... ] and edit the fields.
+     classification: "TOP SECRET" | "SECRET" | "CONFIDENTIAL" | "UNCLASSIFIED"
+     url: path to the intel doc HTML file
+     ================================================================ -->
+<script>
+const DOCUMENTS = [
+  {
+    id:             "Document1",
+    title:          "Operation Iron Harbor",
+    desc:           "The first briefing document.",
+    date:           "2026 // 05 // 20",
+    classification: "TOP SECRET",
+    url:            "intel 01.html",
+  },
+  /*{
+    id:             "Document2",
+    title:          "Document is still locked",
+    desc:           "Satellite imagery cross-referenced with ground intel on infrastructure nodes.",
+    date:           "2026 // 04 // 08",
+    classification: "TOP SECRET",
+    url:            "#",
+  },
+  {
+    id:             "Document3",
+    title:          "Document is still locked",
+    desc:           "Human intelligence summary and threat actor mapping in the eastern corridor.",
+    date:           "2026 // 03 // 15",
+    classification: "SECRET",
+    url:            "#",
+  },
+  {
+    id:             "Document4",
+    title:          "Document is still locked",
+    desc:           "Supply line vulnerability assessment and recommended interdiction points.",
+    date:           "2026 // 02 // 28",
+    classification: "SECRET",
+    url:            "#",
+  },
+  {
+    id:             "Document5",
+    title:          "Document is still locked",
+    desc:           "Quarterly political landscape summary for internal command distribution.",
+    date:           "2026 // 01 // 10",
+    classification: "CONFIDENTIAL",
+    url:            "#",
+  },
+  {
+    id:             "Document5",
+    title:          "Document is still locked",
+    desc:           "Unclassified summary prepared for inter-agency sharing and public record.",
+    date:           "2025 // 12 // 01",
+    classification: "UNCLASSIFIED",
+    url:            "#",
+  }, */
+  // {
+  //   id:             "TS-XXXX-ZULU",
+  //   title:          "Your Document Title",
+  //   desc:           "Short description.",
+  //   date:           "2026 // 06 // 01",
+  //   classification: "TOP SECRET",
+  //   url:            "your-file.html",
+  // },
+];
+
+const ARCHIVE_TITLE = "INTEL ARCHIVE";
+const ARCHIVE_DATE  = "2026 // 05 // 20";
+</script>
+<!-- ================================================================ -->
+
+<header>
+  <h1 id="h-title">INTEL <span>ARCHIVE</span></h1>
+  <div class="header-meta" id="h-meta">—</div>
+</header>
+
+<div id="grid"></div>
+
+<script>
+const CLASS_MAP = {
+  "TOP SECRET":   "ts",
+  "SECRET":       "s",
+  "CONFIDENTIAL": "c",
+  "UNCLASSIFIED": "u",
+};
+
+document.getElementById('h-title').innerHTML =
+  ARCHIVE_TITLE.replace(/(\S+)\s+(\S+)/, '$1 <span>$2</span>');
+document.getElementById('h-meta').textContent =
+  DOCUMENTS.length + ' DOCUMENTS // ' + ARCHIVE_DATE;
+
+const grid = document.getElementById('grid');
+DOCUMENTS.forEach(doc => {
+  const cls = CLASS_MAP[doc.classification] || 'u';
+  const a   = document.createElement('a');
+  a.className = 'card ' + cls;
+  a.href      = doc.url;
+  a.innerHTML = `
+    <div class="badge">${doc.classification}</div>
+    <div class="card-id">${doc.id}</div>
+    <div class="card-title">${doc.title}</div>
+    <div class="card-desc">${doc.desc}</div>
+    <div class="card-footer">
+      <span class="card-date">${doc.date}</span>
+      <span class="arrow">OPEN ▶</span>
+    </div>
+  `;
+  grid.appendChild(a);
+});
+</script>
+</body>
+</html>

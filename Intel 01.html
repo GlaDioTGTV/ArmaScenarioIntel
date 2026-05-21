@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLASSIFIED // INTEL DOSSIER</title>
+
+<script>
+/* ================================================================
+   ★★★  CONFIGURATION — EDIT EVERYTHING HERE  ★★★
+   ================================================================ */
+
+/* ── DOCUMENT IDENTITY ─────────────────────────────────────── */
+const DOC_META = {
+  docId:          "TS-7742-DELTA",          // Document ID shown in header & page footer
+  classification: "TOP SECRET",             // Stamp shown everywhere
+  agency:         "DIRECTORATE OF INTELLIGENCE", // Sub-label in header
+  date:           "2026 // 05 // 20",       // Date shown in header and cover (edit freely)
+  operationName:  "OPERATION: IRON VEIL",   // Operation name shown on cover & footer
+};
+
+/* ── LOGOS (top-right corner of every page) ─────────────────── */
+const LOGOS = {
+  logo1: "https://media.discordapp.net/attachments/1500498065273000177/1505629235178508354/Logo_TGTV_-_White_Stroke.png?ex=6a0f467e&is=6a0df4fe&hm=14291f012d1af862a8d5c0ccd8bf5985707d6e30d0e90b0afe5e90a674530565&=&format=webp&quality=lossless",
+  // logo1: "",   ← leave empty to hide logo 1
+  logo2: "https://media.discordapp.net/attachments/1501982774264074261/1502436291781070919/1000009504_1.png?ex=6a0f8655&is=6a0e34d5&hm=6de98371b08cab4d1e345d006a15209dbe397e808db37876b7aa67313a5072d5&=&format=webp&quality=lossless",
+  // logo2: "",   ← leave empty to hide logo 2
+};
+
+/* ── EXTERNAL LINKS ─────────────────────────────────────────── */
+const LINKS = {
+  site1: {
+    label: "TGTV",
+    url:   "https://tgtv.tn",
+  },
+  site2: {
+    label: "Discord",
+    url:   "https://discord.gg/pyhQnXDACN",
+  },
+};
+
+/* ── PAGES (first entry = cover) ────────────────────────────── */
+const PAGE_IMAGES = [
+  // COVER — first image is always the cover page
+  "cover 01.jpg",
+  // PAGE 1 — leave "" for a placeholder
+  "images/doc 1 page 1.jpg",
+  // PAGE 2
+  "images/doc 1 page 2.jpg",
+  /* PAGE 3
+  "",*/
+  // Add more pages below — each line = one new page:
+  // "https://your-image-url.com/page4.jpg",
+  // "https://your-image-url.com/page5.jpg",
+];
+
+/* ================================================================
+   END OF CONFIGURATION
+   ================================================================ */
+</script>
+
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oswald:wght@400;600;700&family=Special+Elite&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #1a1a0e;
+    --paper: #e8e0c8;
+    --red: #8b1a1a;
+    --green-dim: #2a4a2a;
+    --green-bright: #4caf50;
+    --amber: #c8960c;
+    --scan-line: rgba(0,0,0,0.04);
+    --page-w: 794px;
+    --page-h: 1123px;
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: #0a0a08;
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--ink);
+    overflow: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg, transparent, transparent 2px,
+      var(--scan-line) 2px, var(--scan-line) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── HUD HEADER ──────────────────────────────────────────── */
+  #hud {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 52px;
+    background: #0d0d0a;
+    border-bottom: 1px solid #2a3a1a;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 24px;
+    z-index: 1000;
+  }
+  .hud-left, .hud-right {
+    display: flex; align-items: center; gap: 20px;
+    font-size: 11px; color: #4a6a3a; letter-spacing: 0.12em;
+  }
+  .hud-center {
+    font-family: 'Oswald', sans-serif;
+    font-size: 13px; font-weight: 700;
+    color: var(--red); letter-spacing: 0.3em; text-transform: uppercase;
+    animation: blink 1.4s step-start infinite;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+  .hud-green { color: var(--green-bright); }
+  .hud-amber { color: var(--amber); }
+  .signal-dot {
+    display: inline-block; width: 6px; height: 6px;
+    border-radius: 50%; background: var(--green-bright);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--green-bright); }
+    50% { opacity: 0.4; box-shadow: none; }
+  }
+
+  /* ── FOOTER ──────────────────────────────────────────────── */
+  #footer {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    height: 48px; background: #0d0d0a;
+    border-top: 1px solid #2a3a1a;
+    display: flex; align-items: center; justify-content: center; gap: 40px;
+    z-index: 1000;
+  }
+
+  /* ── NAV BUTTONS ─────────────────────────────────────────── */
+  .nav-btn {
+    background: transparent; border: 1px solid #2a3a1a;
+    color: #4a6a3a; font-family: 'Share Tech Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em; padding: 8px 20px;
+    cursor: pointer; text-transform: uppercase;
+    position: relative; overflow: hidden;
+  }
+  .nav-btn::before {
+    content: ''; position: absolute; inset: 0;
+    background: var(--green-dim);
+    transform: translateX(-100%); transition: transform 0.2s;
+  }
+  .nav-btn:hover::before { transform: translateX(0); }
+  .nav-btn:hover { color: var(--green-bright); border-color: var(--green-bright); }
+  .nav-btn:active { transform: scale(0.97); }
+  .nav-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+  .nav-btn:disabled:hover::before { transform: translateX(-100%); }
+  .nav-btn:disabled:hover { color: #4a6a3a; border-color: #2a3a1a; }
+  .nav-btn span { position: relative; z-index: 1; }
+
+  #page-counter {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px; color: #4a6a3a;
+    letter-spacing: 0.2em; min-width: 120px; text-align: center;
+  }
+
+  /* ── STAGE ───────────────────────────────────────────────── */
+  #stage {
+    position: fixed; top: 52px; bottom: 48px; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #book-scaler {
+    display: flex; align-items: center; justify-content: center;
+    transform-origin: center center;
+  }
+  #book {
+    position: relative;
+    width: var(--page-w); height: var(--page-h);
+  }
+
+  /* ── PAGES ───────────────────────────────────────────────── */
+  .page {
+    position: absolute; inset: 0;
+    width: var(--page-w); height: var(--page-h);
+    display: none;
+  }
+  .page.active {
+    display: block;
+    box-shadow: -14px 0 60px rgba(0,0,0,0.85), 14px 0 60px rgba(0,0,0,0.85);
+  }
+
+  /* ── PAGE CONTENT ────────────────────────────────────────── */
+  .page-content {
+    width: 100%; height: 100%;
+    background: var(--paper);
+    position: relative; overflow: hidden;
+  }
+  /* Aged paper texture */
+  .page-content::before {
+    content: ''; position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 10% 10%, rgba(180,160,100,0.25) 0%, transparent 60%),
+      radial-gradient(ellipse at 90% 80%, rgba(150,130,80,0.2) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, transparent 60%, rgba(100,80,40,0.1) 100%);
+    pointer-events: none; z-index: 2;
+  }
+  /* Edge vignette */
+  .page-content::after {
+    content: ''; position: absolute; inset: 0;
+    box-shadow: inset 0 0 40px rgba(60,40,0,0.2), inset 0 0 4px rgba(0,0,0,0.3);
+    pointer-events: none; z-index: 3;
+  }
+  .page-image {
+    width: 100%; height: 100%;
+    object-fit: cover; display: block; position: relative; z-index: 1;
+  }
+
+  /* ── PLACEHOLDER ─────────────────────────────────────────── */
+  .page-placeholder {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 16px; padding: 60px; position: relative; z-index: 1;
+  }
+  .placeholder-grid {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(150,130,80,0.15) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(150,130,80,0.15) 1px, transparent 1px);
+    background-size: 30px 30px;
+  }
+  .placeholder-label {
+    font-family: 'Special Elite', serif; font-size: 14px;
+    color: rgba(60,40,0,0.4); letter-spacing: 0.3em; text-transform: uppercase;
+    text-align: center; position: relative; z-index: 1;
+  }
+  .placeholder-num {
+    font-family: 'Oswald', sans-serif; font-size: 80px; font-weight: 700;
+    color: rgba(60,40,0,0.08); position: relative; z-index: 1;
+  }
+
+  /* ── COVER OVERLAY ───────────────────────────────────────── */
+  .cover-overlay {
+    position: absolute; inset: 0; z-index: 4;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: space-between;
+    padding: 50px 60px; pointer-events: none;
+  }
+  .cover-top { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .cover-classification {
+    font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 0.5em; color: var(--red);
+    background: rgba(139,26,26,0.1);
+    border: 1.5px solid var(--red); padding: 4px 20px; text-transform: uppercase;
+  }
+  .cover-header-line { width: 100%; height: 1px; background: rgba(60,40,0,0.3); margin: 12px 0; }
+  .cover-agency {
+    font-family: 'Share Tech Mono', monospace; font-size: 10px;
+    letter-spacing: 0.4em; color: rgba(60,40,0,0.5); text-transform: uppercase;
+  }
+  .cover-bottom { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .cover-meta {
+    font-family: 'Share Tech Mono', monospace; font-size: 9px;
+    letter-spacing: 0.2em; color: rgba(60,40,0,0.5); text-transform: uppercase;
+  }
+
+  /* ── PAGE OVERLAY (internal pages) ──────────────────────── */
+  .page-overlay { position: absolute; inset: 0; z-index: 4; pointer-events: none; }
+  .stamp-classified {
+    position: absolute; top: 18px; left: 24px;
+    font-family: 'Oswald', sans-serif; font-size: 9px; font-weight: 700;
+    letter-spacing: 0.4em; color: var(--red);
+    border: 1.5px solid var(--red); padding: 2px 8px;
+    transform: rotate(2deg); opacity: 0.8;
+  }
+  .page-num {
+    position: absolute; bottom: 14px; left: 28px;
+    font-family: 'Share Tech Mono', monospace; font-size: 9px;
+    color: rgba(60,40,0,0.4); letter-spacing: 0.2em;
+  }
+  .corner-bracket {
+    position: absolute; width: 20px; height: 20px;
+    border-color: rgba(60,40,0,0.25); border-style: solid; border-width: 0;
+  }
+  .corner-bracket.tl { top: 10px; left: 10px; border-top-width: 2px; border-left-width: 2px; }
+  .corner-bracket.tr { top: 10px; right: 10px; border-top-width: 2px; border-right-width: 2px; }
+  .corner-bracket.bl { bottom: 10px; left: 10px; border-bottom-width: 2px; border-left-width: 2px; }
+  .corner-bracket.br { bottom: 10px; right: 10px; border-bottom-width: 2px; border-right-width: 2px; }
+  .scan-bar {
+    position: absolute; top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, rgba(76,175,80,0.6), transparent);
+    animation: scan-down 4s linear infinite;
+  }
+  @keyframes scan-down {
+    0%   { top: 0;    opacity: 1; }
+    90%  { top: 100%; opacity: 0.3; }
+    100% { top: 100%; opacity: 0; }
+  }
+
+  /* ── LOGOS (top-right corner of every page) ──────────────── */
+  .page-logos {
+    position: absolute; top: 12px; right: 12px;
+    z-index: 5; display: flex; align-items: center; gap: 8px;
+    pointer-events: none;
+  }
+  .page-logo {
+    width: 44px; height: 44px;
+    object-fit: contain;
+    background: rgba(232,224,200,0.75);
+    border: 1px solid rgba(60,40,0,0.2);
+    padding: 3px;
+    display: block;
+  }
+  .page-logo.hidden { display: none; }
+
+  /* ── LOADING SCREEN ──────────────────────────────────────── */
+  #loading {
+    position: fixed; inset: 0; background: #0a0a08;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    z-index: 9000; gap: 20px; transition: opacity 0.8s ease;
+  }
+  #loading.hidden { opacity: 0; pointer-events: none; }
+  .loading-text {
+    font-family: 'Share Tech Mono', monospace; font-size: 11px;
+    color: var(--green-bright); letter-spacing: 0.4em; text-transform: uppercase;
+  }
+  .loading-bar-wrap { width: 280px; height: 2px; background: #1a2a1a; overflow: hidden; }
+  .loading-bar-fill { height: 100%; background: var(--green-bright); animation: load-fill 1.5s ease forwards; }
+  @keyframes load-fill { from { width: 0%; } to { width: 100%; } }
+
+  /* ── KEYBOARD HINT ───────────────────────────────────────── */
+  #kbd-hint {
+    position: fixed; bottom: 60px; right: 20px;
+    font-family: 'Share Tech Mono', monospace; font-size: 9px;
+    color: #2a3a2a; letter-spacing: 0.15em; text-transform: uppercase;
+    opacity: 0; animation: fade-hint 0.6s ease 2.5s forwards;
+  }
+  @keyframes fade-hint { to { opacity: 1; } }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     All configuration is in the <script> block
+     at the very top of this file — easy to find!
+     ═══════════════════════════════════════════════ -->
+
+<!-- Loading Screen -->
+<div id="loading">
+  <div class="loading-text">INITIALIZING SECURE VIEWER</div>
+  <div class="loading-bar-wrap"><div class="loading-bar-fill"></div></div>
+  <div class="loading-text" id="loading-status">DECRYPTING DOCUMENT...</div>
+</div>
+
+<!-- HUD Header -->
+<div id="hud">
+  <div class="hud-left">
+    <span class="signal-dot"></span>
+    <span class="hud-green" id="hud-doc-id">—</span>
+    <span>|</span>
+    <span id="hud-agency" style="color:#3a5a2a">—</span>
+  </div>
+  <div class="hud-center" id="hud-class">TOP SECRET</div>
+  <div class="hud-right">
+    <span id="hud-date" class="hud-amber">—</span>
+  </div>
+</div>
+
+<!-- Main Stage -->
+<div id="stage">
+  <div id="book-scaler">
+    <div id="book"><!-- pages injected by JS --></div>
+  </div>
+</div>
+
+<!-- Footer Navigation -->
+<div id="footer">
+  <button class="nav-btn" id="btn-prev" onclick="prevPage()"><span>◀ PREV PAGE</span></button>
+  <div id="page-counter">PAGE — / —</div>
+  <button class="nav-btn" id="btn-next" onclick="nextPage()"><span>NEXT PAGE ▶</span></button>
+</div>
+
+<div id="kbd-hint">← → ARROW KEYS TO NAVIGATE</div>
+
+<script>
+/* ── BUILD LOGO HTML ─────────────────────────────────────────── */
+function logoHTML() {
+  const l1 = LOGOS.logo1
+    ? `<img class="page-logo" src="${LOGOS.logo1}" alt="logo1" onerror="this.classList.add('hidden')">`
+    : '';
+  const l2 = LOGOS.logo2
+    ? `<img class="page-logo" src="${LOGOS.logo2}" alt="logo2" onerror="this.classList.add('hidden')">`
+    : '';
+  if (!l1 && !l2) return '';
+  return `<div class="page-logos">${l1}${l2}</div>`;
+}
+
+/* ── BUILD PAGES ─────────────────────────────────────────────── */
+let currentPage = 0;
+const pages = [];
+
+function buildPages() {
+  const book = document.getElementById('book');
+  book.innerHTML = '';
+  const imgs = PAGE_IMAGES.length > 0 ? PAGE_IMAGES : [''];
+
+  imgs.forEach((url, i) => {
+    const page = document.createElement('div');
+    page.className = 'page' + (i === 0 ? ' active' : '');
+    page.id = 'page-' + i;
+    const isCover = (i === 0);
+
+    page.innerHTML = `
+      <div class="page-content">
+        ${url ? `<img class="page-image" src="${url}" alt="Page ${i}" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+        <div class="page-placeholder" style="${url ? 'display:none' : 'display:flex'}">
+          <div class="placeholder-grid"></div>
+          <div class="placeholder-num">${String(i).padStart(2,'0')}</div>
+          <div class="placeholder-label">${isCover ? 'cover · add image url above' : 'page ' + i + ' · add image url'}</div>
+        </div>
+
+        ${isCover ? `
+        <div class="cover-overlay">
+          <div class="cover-top">
+            <div class="cover-classification">${DOC_META.classification}</div>
+            <div class="cover-header-line"></div>
+            <div class="cover-agency">${DOC_META.agency}</div>
+          </div>
+          <div class="cover-bottom">
+            <div class="cover-header-line"></div>
+            <div class="cover-meta">${DOC_META.docId} &nbsp;|&nbsp; ${DOC_META.date}</div>
+            <div class="cover-meta">${DOC_META.operationName}</div>
+            <div class="cover-meta" style="margin-top:6px">
+              <a href="${LINKS.site1.url}" target="_blank" style="color:rgba(60,40,0,0.45);text-decoration:none;letter-spacing:0.15em;pointer-events:all">${LINKS.site1.label}: ${LINKS.site1.url}</a>
+              &nbsp;&nbsp;|&nbsp;&nbsp;
+              <a href="${LINKS.site2.url}" target="_blank" style="color:rgba(60,40,0,0.45);text-decoration:none;letter-spacing:0.15em;pointer-events:all">${LINKS.site2.label}: ${LINKS.site2.url}</a>
+            </div>
+          </div>
+        </div>` : `
+        <div class="page-overlay">
+          <div class="stamp-classified">${DOC_META.classification}</div>
+          <div class="page-num">${DOC_META.docId} // PG.${String(i).padStart(3,'0')} // ${DOC_META.operationName}</div>
+          <div class="corner-bracket tl"></div>
+          <div class="corner-bracket tr"></div>
+          <div class="corner-bracket bl"></div>
+          <div class="corner-bracket br"></div>
+          <div class="scan-bar"></div>
+        </div>`}
+
+        ${logoHTML()}
+      </div>
+    `;
+
+    book.appendChild(page);
+    pages.push(page);
+  });
+
+  updateUI();
+  scaleToFit();
+}
+
+/* ── NAVIGATION ──────────────────────────────────────────────── */
+function goTo(target) {
+  if (target < 0 || target >= pages.length || target === currentPage) return;
+  pages[currentPage].classList.remove('active');
+  currentPage = target;
+  pages[currentPage].classList.add('active');
+  updateUI();
+}
+function nextPage() { goTo(currentPage + 1); }
+function prevPage() { goTo(currentPage - 1); }
+
+/* ── UI ──────────────────────────────────────────────────────── */
+function updateUI() {
+  document.getElementById('page-counter').textContent =
+    `PAGE  ${String(currentPage + 1).padStart(2,'0')} / ${String(pages.length).padStart(2,'0')}`;
+  document.getElementById('btn-prev').disabled = currentPage === 0;
+  document.getElementById('btn-next').disabled = currentPage === pages.length - 1;
+}
+
+function initHud() {
+  document.getElementById('hud-doc-id').textContent = DOC_META.docId;
+  document.getElementById('hud-agency').textContent = DOC_META.agency;
+  document.getElementById('hud-class').textContent  = DOC_META.classification;
+  document.getElementById('hud-date').textContent   = DOC_META.date;
+}
+
+/* ── SCALE TO FIT ────────────────────────────────────────────── */
+function scaleToFit() {
+  const scaler = document.getElementById('book-scaler');
+  const scale  = Math.min((window.innerWidth - 40) / 794, (window.innerHeight - 52 - 48 - 40) / 1123, 1);
+  scaler.style.transform = `scale(${scale})`;
+}
+window.addEventListener('resize', scaleToFit);
+
+/* ── KEYBOARD & SWIPE ────────────────────────────────────────── */
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextPage();
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   prevPage();
+});
+let touchStartX = null;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  if (touchStartX === null) return;
+  const dx = e.changedTouches[0].clientX - touchStartX;
+  if (Math.abs(dx) > 50) { dx < 0 ? nextPage() : prevPage(); }
+  touchStartX = null;
+});
+
+/* ── BOOT ────────────────────────────────────────────────────── */
+const statusMessages = ['DECRYPTING DOCUMENT...','VERIFYING CLEARANCE...','LOADING SECURE ASSETS...','READY.'];
+let si = 0;
+const statusEl = document.getElementById('loading-status');
+const statusInterval = setInterval(() => {
+  si++;
+  if (si < statusMessages.length) statusEl.textContent = statusMessages[si];
+  else clearInterval(statusInterval);
+}, 380);
+
+window.addEventListener('load', () => {
+  buildPages();
+  initHud();
+  setTimeout(() => {
+    document.getElementById('loading').classList.add('hidden');
+    setTimeout(() => document.getElementById('loading').remove(), 900);
+  }, 1600);
+});
+</script>
+</body>
+</html>
